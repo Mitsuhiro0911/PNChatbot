@@ -5,15 +5,22 @@ fun main(args: Array<String>) {
 
     val command = arrayOf(
         "sh", "-c",
+        "echo ${message + reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
+    )
+
+    val wordList = Parser().makeWordList(command)
+
+    val messageCommand = arrayOf(
+        "sh", "-c",
         "echo ${message} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
     )
 
-    val messaseTfMap = Parser().parse(command)
-
+    val messaseTfMap = Parser().calTf(messageCommand, wordList)
+    println(messaseTfMap)
     val reverseCommand = arrayOf(
         "sh", "-c",
         "echo ${reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
     )
-    val reverseMessaseTfMap = Parser().parse(reverseCommand)
-
+    val reverseMessaseTfMap = Parser().calTf(reverseCommand, wordList)
+    println(reverseMessaseTfMap)
 }
