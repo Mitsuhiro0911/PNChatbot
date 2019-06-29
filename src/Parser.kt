@@ -33,10 +33,10 @@ class Parser{
         return wordList
     }
 
-    fun calTf(command: Array<String>, wordList: ArrayList<String>): LinkedHashMap<String, Int>{
-        val tfMap = LinkedHashMap<String, Int>()
+    fun calTf(command: Array<String>, wordList: ArrayList<String>): LinkedHashMap<String, Double>{
+        val tfMap = LinkedHashMap<String, Double>()
         for(word in wordList){
-            tfMap.put(word, 0)
+            tfMap.put(word, 0.0)
         }
         // コマンド結果をProcessで受け取る
         val ps = Runtime.getRuntime().exec(command)
@@ -59,7 +59,7 @@ class Parser{
                 val word = targetLine.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
                 if (targetType == "名詞") {
                     // 同じ単語が出現する毎に出現回数をカウントアップする
-                    tfMap.put(word, tfMap.get(word)!!.plus(1))
+                    tfMap.put(word, tfMap.get(word)!!.plus(1.0))
                 }
             }
         }

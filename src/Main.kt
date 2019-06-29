@@ -3,6 +3,7 @@ fun main(args: Array<String>) {
     val message = "この写真はインスタ映えしますね。"
     val reverseMessage = "私の趣味は写真を取ることです。写真"
 
+    val cal = Calculator()
     val command = arrayOf(
         "sh", "-c",
         "echo ${message + reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
@@ -23,4 +24,8 @@ fun main(args: Array<String>) {
     )
     val reverseMessaseTfMap = Parser().calTf(reverseCommand, wordList)
     println(reverseMessaseTfMap)
+
+    val messageVector = messaseTfMap.values.toDoubleArray()
+    val reverseMessageVector = reverseMessaseTfMap.values.toDoubleArray()
+    println(cal.calCosSimilarity(messageVector, reverseMessageVector))
 }
