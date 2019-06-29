@@ -58,7 +58,8 @@ class Parser{
                 val targetType = targetLine.split("[\t|,]".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
                 val word = targetLine.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
                 if (targetType == "名詞") {
-                    tfMap.put(word, 1)
+                    // 同じ単語が出現する毎に出現回数をカウントアップする
+                    tfMap.put(word, tfMap.get(word)!!.plus(1))
                 }
             }
         }

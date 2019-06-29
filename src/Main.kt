@@ -1,7 +1,7 @@
 fun main(args: Array<String>) {
     // チャットボットへの入力メッセージ
     val message = "この写真はインスタ映えしますね。"
-    val reverseMessage = "私の趣味は写真を取ることです。"
+    val reverseMessage = "私の趣味は写真を取ることです。写真"
 
     val command = arrayOf(
         "sh", "-c",
