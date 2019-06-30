@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
     val br = BufferedReader(FileReader(File("./data/corpas/nucc/data001.txt")))
     var reverseMessage = br.readLine()
     while(reverseMessage != null) {
-        println(reverseMessage)
+//        println(reverseMessage)
         val messageCommand = arrayOf(
             "sh", "-c",
             "echo ${message} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
@@ -21,8 +21,11 @@ fun main(args: Array<String>) {
             "sh", "-c",
             "echo ${reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
         )
-        val wordList = Parser().makeWordList(messageCommand, reverseCommand)
-
+        val wordList = Parser().makeWordList(messageCommand, reverseCommand, reverseMessage)
+        if(wordList === null) {
+            reverseMessage = br.readLine()
+            continue
+        }
 
         val messaseTfMap = Parser().calTf(messageCommand, wordList)
         println(messaseTfMap)
