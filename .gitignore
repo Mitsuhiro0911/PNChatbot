@@ -25,3 +25,4 @@ hs_err_pid*
 # 追加
 .idea/
 PNChatbot.iml
+data/corpas/
