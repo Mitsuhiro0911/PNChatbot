@@ -13,23 +13,20 @@ fun main(args: Array<String>) {
     var reverseMessage = br.readLine()
     while(reverseMessage != null) {
         println(reverseMessage)
-        val command = arrayOf(
-            "sh", "-c",
-            "echo ${message + reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
-        )
-
-        val wordList = Parser().makeWordList(command)
         val messageCommand = arrayOf(
             "sh", "-c",
             "echo ${message} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
         )
-
-        val messaseTfMap = Parser().calTf(messageCommand, wordList)
-        println(messaseTfMap)
         val reverseCommand = arrayOf(
             "sh", "-c",
             "echo ${reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
         )
+        val wordList = Parser().makeWordList(messageCommand, reverseCommand)
+
+
+        val messaseTfMap = Parser().calTf(messageCommand, wordList)
+        println(messaseTfMap)
+
 
         val reverseMessaseTfMap = Parser().calTf(reverseCommand, wordList)
         println(reverseMessaseTfMap)
