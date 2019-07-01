@@ -4,34 +4,7 @@ import java.io.InputStreamReader
 class Parser {
     fun parseMessage(command: Array<String>): ArrayList<String>? {
         var wordList: ArrayList<String>? = arrayListOf()
-        // コマンド結果をProcessで受け取る
-        val ps = Runtime.getRuntime().exec(command)
-        // 標準出力
-        val bReader_i = BufferedReader(InputStreamReader(ps.inputStream, "UTF-8"))
-        // 標準出力を1行ずつ受け取る一時オブジェクト
-        var targetLine: String?
-        // 形態素解析結果を全て解析する
-        while (true) {
-            // 形態素解析結果を1行ずつ受け取る
-            targetLine = bReader_i.readLine()
-            // 最終行まで解析が完了したらループを抜ける
-            if (targetLine == null) {
-                break
-            } else if (targetLine == "EOS") {
-                continue
-            } else {
-                // 品詞
-                val targetType =
-                    targetLine.split("[\t|,]".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-                val word = targetLine.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-                if (targetType == "名詞") {
-                    wordList?.add(word)
-                }
-            }
-        }
-        // 終了を待つ
-        ps.waitFor()
-        return wordList
+        return parse(command, wordList)
     }
 
     fun parseReverseMessage(command: Array<String>, messageWordList: ArrayList<String>?, reverseMessage: String): ArrayList<String>? {
@@ -45,34 +18,7 @@ class Parser {
         if (skipFlag) {
             return null
         }
-        // コマンド結果をProcessで受け取る
-        val ps = Runtime.getRuntime().exec(command)
-        // 標準出力
-        val bReader_i = BufferedReader(InputStreamReader(ps.inputStream, "UTF-8"))
-        // 標準出力を1行ずつ受け取る一時オブジェクト
-        var targetLine: String?
-        // 形態素解析結果を全て解析する
-        while (true) {
-            // 形態素解析結果を1行ずつ受け取る
-            targetLine = bReader_i.readLine()
-            // 最終行まで解析が完了したらループを抜ける
-            if (targetLine == null) {
-                break
-            } else if (targetLine == "EOS") {
-                continue
-            } else {
-                // 品詞
-                val targetType =
-                    targetLine.split("[\t|,]".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-                val word = targetLine.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-                if (targetType == "名詞") {
-                    wordList?.add(word)
-                }
-            }
-        }
-        // 終了を待つ
-        ps.waitFor()
-        return wordList
+        return parse(command, wordList)
     }
 
     fun calTf(command: Array<String>, wordList: ArrayList<String>): LinkedHashMap<String, Double> {
@@ -108,5 +54,35 @@ class Parser {
         // 終了を待つ
         ps.waitFor()
         return tfMap
+    }
+    fun parse(command: Array<String>, wordList: ArrayList<String>?): ArrayList<String>?{
+        // コマンド結果をProcessで受け取る
+        val ps = Runtime.getRuntime().exec(command)
+        // 標準出力
+        val bReader_i = BufferedReader(InputStreamReader(ps.inputStream, "UTF-8"))
+        // 標準出力を1行ずつ受け取る一時オブジェクト
+        var targetLine: String?
+        // 形態素解析結果を全て解析する
+        while (true) {
+            // 形態素解析結果を1行ずつ受け取る
+            targetLine = bReader_i.readLine()
+            // 最終行まで解析が完了したらループを抜ける
+            if (targetLine == null) {
+                break
+            } else if (targetLine == "EOS") {
+                continue
+            } else {
+                // 品詞
+                val targetType =
+                    targetLine.split("[\t|,]".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+                val word = targetLine.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
+                if (targetType == "名詞") {
+                    wordList?.add(word)
+                }
+            }
+        }
+        // 終了を待つ
+        ps.waitFor()
+        return wordList
     }
 }

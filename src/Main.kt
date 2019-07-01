@@ -5,7 +5,8 @@ import java.io.FileReader
 
 fun main(args: Array<String>) {
     // チャットボットへの入力メッセージ
-    val message = "この写真はインスタ映えしますね。"
+//    val message = "この写真はインスタ映えしますね。"
+    val message = "ラーメン食べよう。"
 //    val reverseMessage = "私の趣味は写真を取ることです。写真"
     val cal = Calculator()
     val messageCommand = arrayOf(
