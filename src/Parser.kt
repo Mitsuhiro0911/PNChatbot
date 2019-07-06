@@ -2,14 +2,22 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class Parser {
+
+    /**
+     * 入力メッセージを形態素解析する。
+     */
     fun parseMessage(command: Array<String>): ArrayList<String>? {
         var wordList: ArrayList<String>? = arrayListOf()
         return parse(command, wordList)
     }
 
+    /**
+     * 返答メッセージを形態素解析する。
+     */
     fun parseReverseMessage(command: Array<String>, messageWordList: ArrayList<String>?, reverseMessage: String): ArrayList<String>? {
         var wordList = messageWordList?.clone() as ArrayList<String>?
         var skipFlag = true
+        // 返答メッセージが入力メッセージリストの名詞を１つも含まない場合、nullを返す
         for (word in wordList!!) {
             if (reverseMessage.contains(word)) {
                 skipFlag = false
@@ -18,9 +26,13 @@ class Parser {
         if (skipFlag) {
             return null
         }
+
         return parse(command, wordList)
     }
 
+    /**
+     * TF値をカウントし、元に素性ベクトルを作成
+     */
     fun calTf(command: Array<String>, wordList: ArrayList<String>): LinkedHashMap<String, Double> {
         val tfMap = LinkedHashMap<String, Double>()
         for (word in wordList) {
@@ -34,6 +46,10 @@ class Parser {
         }
         return tfMap
     }
+
+    /**
+     * 形態素解析し、出現した名詞のリストを返す。
+     */
     fun parse(command: Array<String>, wordList: ArrayList<String>?): ArrayList<String>?{
         // コマンド結果をProcessで受け取る
         val ps = Runtime.getRuntime().exec(command)

@@ -33,19 +33,19 @@ fun main(args: Array<String>) {
                 "echo ${reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
             )
             // 返答メッセージを形態素解析し、出現する名詞をリストへ格納。入力メッセージと名詞が１つも被らない場合はnullとなる
-            val wordList = Parser().parseReverseMessage(reverseCommand, messageWordList, reverseMessage)
+            val reverseMessageWordList = Parser().parseReverseMessage(reverseCommand, messageWordList, reverseMessage)
             // 入力メッセージと返答メッセージの名詞が全く重複しない場合、その後の処理は冗長なのでスキップする(処理速度向上目的)
-            if (wordList === null) {
+            if (reverseMessageWordList === null) {
                 reverseMessage = br.readLine()
                 continue
             }
             println(reverseMessage)
             //　入力メッセージの素性ベクトルを取得(TF値により算出)
-            val messaseTfMap = Parser().calTf(messageCommand, wordList)
+            val messaseTfMap = Parser().calTf(messageCommand, reverseMessageWordList)
             println(messaseTfMap)
 
             //　返答メッセージの素性ベクトルを取得(TF値により算出)
-            val reverseMessaseTfMap = Parser().calTf(reverseCommand, wordList)
+            val reverseMessaseTfMap = Parser().calTf(reverseCommand, reverseMessageWordList)
             println(reverseMessaseTfMap)
 
             // 入力メッセージと返答メッセージのコサイン類似度を計算
