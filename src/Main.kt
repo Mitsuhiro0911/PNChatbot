@@ -4,7 +4,6 @@ import java.io.FileReader
 
 
 fun main(args: Array<String>) {
-    // TODO:一人の連続した会話を連結できるようにする
     // TODO:素性ベクトルの計算処理にIDFの尺度を追加する
 
     // チャットボットへの入力メッセージ
@@ -24,7 +23,7 @@ fun main(args: Array<String>) {
     // nuccコーパスのdata001.txt〜data129.txtを解析
     for(i in 1 until 130) {
         println("data${String.format("%03d", i)}")
-        val br = BufferedReader(FileReader(File("./data/corpas/nucc/data${String.format("%03d", i)}.txt")))
+        val br = BufferedReader(FileReader(File("./data/corpas/nucc_adjust/data${String.format("%03d", i)}.txt")))
         // data●●●.txtの冒頭のヘッダ部を読み飛ばし、対話内容の１行目を取得
         var reverseMessage = PreProcessing().skipHeader(br)
         while (reverseMessage != null) {
