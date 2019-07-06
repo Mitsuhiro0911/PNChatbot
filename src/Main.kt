@@ -28,10 +28,12 @@ fun main(args: Array<String>) {
         var reverseMessage = PreProcessing().skipHeader(br)
         while (reverseMessage != null) {
 //        println(reverseMessage)
+            // substringによって、文頭の人物コードをカット
             val reverseCommand = arrayOf(
                 "sh", "-c",
                 "echo ${reverseMessage.substring(5, reverseMessage.length)} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
             )
+
             // 返答メッセージを形態素解析し、出現する名詞をリストへ格納。入力メッセージと名詞が１つも被らない場合はnullとなる
             val reverseMessageWordList = Parser().parseReverseMessage(reverseCommand, messageWordList, reverseMessage)
             // 入力メッセージと返答メッセージの名詞が全く重複しない場合、その後の処理は冗長なのでスキップする(処理速度向上目的)
@@ -39,7 +41,8 @@ fun main(args: Array<String>) {
                 reverseMessage = br.readLine()
                 continue
             }
-            println(reverseMessage)
+            println()
+            println("類似した発話：${reverseMessage.substring(5, reverseMessage.length)}")
             //　入力メッセージの素性ベクトルを取得(TF値により算出)
             val messaseTfMap = Parser().calTf(messageCommand, reverseMessageWordList)
             println(messaseTfMap)
@@ -51,10 +54,11 @@ fun main(args: Array<String>) {
             // 入力メッセージと返答メッセージのコサイン類似度を計算
             val messageVector = messaseTfMap.values.toDoubleArray()
             val reverseMessageVector = reverseMessaseTfMap.values.toDoubleArray()
-            println(cal.calCosSimilarity(messageVector, reverseMessageVector))
+            println("コサイン類似度：${cal.calCosSimilarity(messageVector, reverseMessageVector)}")
 
             reverseMessage = br.readLine()
-            println("返答：${reverseMessage}")
+            println("返答：${reverseMessage.substring(5, reverseMessage.length)}")
+            println()
         }
     }
 }
