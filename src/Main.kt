@@ -25,7 +25,8 @@ fun main(args: Array<String>) {
     for(i in 1 until 130) {
         println("data${String.format("%03d", i)}")
         val br = BufferedReader(FileReader(File("./data/corpas/nucc/data${String.format("%03d", i)}.txt")))
-        var reverseMessage = br.readLine()
+        // data●●●.txtの冒頭のヘッダ部を読み飛ばし、対話内容の１行目を取得
+        var reverseMessage = PreProcessing().skipHeader(br)
         while (reverseMessage != null) {
 //        println(reverseMessage)
             val reverseCommand = arrayOf(
