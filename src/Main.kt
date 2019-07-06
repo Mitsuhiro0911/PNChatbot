@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
 
     // チャットボットへの入力メッセージ
 //    val message = "この写真はインスタ映えしますね。"
-    val message = "ラーメン食べよう。"
+    val message = "おすすめのラーメンを教えて。"
 //    val reverseMessage = "私の趣味は写真を取ることです。写真"
     val cal = Calculator()
 
@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
 //        println(reverseMessage)
             val reverseCommand = arrayOf(
                 "sh", "-c",
-                "echo ${reverseMessage} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
+                "echo ${reverseMessage.substring(5, reverseMessage.length)} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
             )
             // 返答メッセージを形態素解析し、出現する名詞をリストへ格納。入力メッセージと名詞が１つも被らない場合はnullとなる
             val reverseMessageWordList = Parser().parseReverseMessage(reverseCommand, messageWordList, reverseMessage)
