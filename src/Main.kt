@@ -24,9 +24,13 @@ fun main(args: Array<String>) {
     for(i in 1 until 130) {
         println("data${String.format("%03d", i)}")
         val br = BufferedReader(FileReader(File("./data/corpas/nucc_adjust/data${String.format("%03d", i)}.txt")))
-        // data●●●.txtの冒頭のヘッダ部を読み飛ばし、対話内容の１行目を取得
-        var reverseMessage = PreProcessing().skipHeader(br)
+        var reverseMessage = br.readLine()
         while (reverseMessage != null) {
+            // 文頭が「＠」で始まる文は解析対象ではないため、スキップする
+            if(reverseMessage.get(0) == '＠'){
+                reverseMessage = br.readLine()
+                continue
+            }
 //        println(reverseMessage)
             // substringによって、文頭の人物コードをカット
             val reverseCommand = arrayOf(
