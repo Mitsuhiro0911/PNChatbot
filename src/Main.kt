@@ -1,6 +1,7 @@
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
+import kotlin.math.log10
 
 
 fun main(args: Array<String>) {
@@ -11,7 +12,7 @@ fun main(args: Array<String>) {
 
     // チャットボットへの入力メッセージ
 //    val message = "この写真はインスタ映えしますね。"
-    val message = "おすすめのラーメンを教えて。"
+    val message = "パズドラはおすすめのゲームです。"
 //    val reverseMessage = "私の趣味は写真を取ることです。写真"
     val cal = Calculator()
 
@@ -24,7 +25,9 @@ fun main(args: Array<String>) {
     println(messageWordList)
 
     // nuccコーパスのdata001.txt〜data129.txtに出現する名詞とそのDF値のマップ
-    val dfMap = cal.getDf()
+    val dfMap = cal.getDf(messageWordList)
+    // nuccコーパスのdata001.txt〜data129.txtの全会話数
+    val corpasLineNum = cal.getCorpasLineNum()
     // nuccコーパスのdata001.txt〜data129.txtを解析
     for(i in 1 until 130) {
         println("data${String.format("%03d", i)}")
@@ -60,11 +63,21 @@ fun main(args: Array<String>) {
             val reverseMessaseTfMap = Parser().calTf(reverseCommand, reverseMessageWordList)
             println(reverseMessaseTfMap)
 
-            val messaseTfIdfMap = messaseTfMap.clone() as LinkedHashMap<String, Double>
+            // 入力メッセージと返答メッセージのTF-IDF値を計算
+            var messaseTfIdfMap = messaseTfMap.clone() as LinkedHashMap<String, Double>
+            var reverseMessaseTfIdfMap = reverseMessaseTfMap.clone() as LinkedHashMap<String, Double>
+            for(word in reverseMessageWordList) {
+                val idf = log10(corpasLineNum / dfMap.get(word)!!)
+                val messageTfIdf = messaseTfMap.get(word)!! * idf
+                messaseTfIdfMap.put(word, messageTfIdf)
+                val reverseMessaseTfIdf = reverseMessaseTfMap.get(word)!! * idf
+                reverseMessaseTfIdfMap.put(word, reverseMessaseTfIdf)
+            }
+            println("入力メッセージTFIDF:${messaseTfIdfMap}\n返答メッセージTFIDF:${reverseMessaseTfIdfMap}")
 
             // 入力メッセージと返答メッセージのコサイン類似度を計算
-            val messageVector = messaseTfMap.values.toDoubleArray()
-            val reverseMessageVector = reverseMessaseTfMap.values.toDoubleArray()
+            val messageVector = messaseTfIdfMap.values.toDoubleArray()
+            val reverseMessageVector = reverseMessaseTfIdfMap.values.toDoubleArray()
             println("コサイン類似度：${cal.calCosSimilarity(messageVector, reverseMessageVector)}")
 
             reverseMessage = br.readLine()
