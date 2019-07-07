@@ -16,7 +16,7 @@ class Calculator{
         return this.cs.measure(DenseInstance(x), DenseInstance(y))
     }
 
-    fun getDf(): LinkedHashMap<String , Double> {
+    fun getDf(messageWordList: ArrayList<String>?): LinkedHashMap<String , Double> {
         val br = BufferedReader(FileReader(File("./data/feature/df.txt")))
         val dfMap = linkedMapOf<String , Double>()
         var dfInfo = br.readLine()
@@ -25,7 +25,19 @@ class Calculator{
             dfMap.put(dfElement[0], dfElement[1].toDouble())
             dfInfo = br.readLine()
         }
+        // 入力メッセージに出現する名詞がnuccコーパスから生成したDFマップに存在しない場合、マップに追加する
+        for(messageWord in messageWordList!!.distinct()) {
+            if (!dfMap.contains(messageWord)) {
+                dfMap.put(messageWord, 1.0)
+            }
+        }
+
         println(dfMap)
         return dfMap
+    }
+
+    fun getCorpasLineNum(): Int {
+        val br = BufferedReader(FileReader(File("./data/feature/corpas_line_num.txt")))
+        return br.readLine().toInt()
     }
 }
