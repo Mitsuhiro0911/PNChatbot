@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 
     // チャットボットへの入力メッセージ
 //    val message = "この写真はインスタ映えしますね。"
-    val message = "パズドラはおすすめのゲームです。"
+    val message = "おすすめのラーメンは。"
 //    val reverseMessage = "私の趣味は写真を取ることです。写真"
     val cal = Calculator()
 
@@ -24,6 +24,8 @@ fun main(args: Array<String>) {
     val messageWordList = Parser().parseMessage(messageCommand)
     println(messageWordList)
 
+    // 返答メッセージと類似度のマップ
+    var answer = LinkedHashMap<String, Double>()
     // nuccコーパスのdata001.txt〜data129.txtに出現する名詞とそのDF値のマップ
     val dfMap = cal.getDf(messageWordList)
     // nuccコーパスのdata001.txt〜data129.txtの全会話数
@@ -78,11 +80,24 @@ fun main(args: Array<String>) {
             // 入力メッセージと返答メッセージのコサイン類似度を計算
             val messageVector = messaseTfIdfMap.values.toDoubleArray()
             val reverseMessageVector = reverseMessaseTfIdfMap.values.toDoubleArray()
-            println("コサイン類似度：${cal.calCosSimilarity(messageVector, reverseMessageVector)}")
+            val cosSimilarity = cal.calCosSimilarity(messageVector, reverseMessageVector)
+            println("コサイン類似度：${cosSimilarity}")
 
             reverseMessage = br.readLine()
             println("返答：${reverseMessage.substring(5, reverseMessage.length)}")
             println()
+            answer.put(reverseMessage.substring(5, reverseMessage.length), cosSimilarity)
         }
     }
+    // 返答メッセージ候補トップ１０を出力
+    val sortedAnswer = answer.toList().sortedByDescending { it.second }.toMap()
+    var i = 0
+    for(ans in sortedAnswer){
+        i = i.plus(1)
+        println("${i}位：${ans}")
+        if(i > 9) {
+            break
+        }
+    }
+
 }
