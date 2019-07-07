@@ -27,6 +27,12 @@ fun main(args: Array<String>) {
 
         println(participantList)
         while (str != null) {
+            println(str)
+            if(str == "＠ＥＮＤ"){
+                bw.newLine()
+                bw.write(str)
+                break
+            }
             var participantFlag = false
             for(participant in participantList){
                 if(str.contains("${participant}：")){
