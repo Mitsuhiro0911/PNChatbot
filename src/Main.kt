@@ -5,6 +5,9 @@ import java.io.FileReader
 
 fun main(args: Array<String>) {
     // TODO:素性ベクトルの計算処理にIDFの尺度を追加する
+    // TODO:前処理でノイズ除去
+    // TODO:Word2Vecで単語間の関係性把握
+    // TODO:ポジティブ・ネガティブ判定
 
     // チャットボットへの入力メッセージ
 //    val message = "この写真はインスタ映えしますね。"
@@ -20,6 +23,8 @@ fun main(args: Array<String>) {
     val messageWordList = Parser().parseMessage(messageCommand)
     println(messageWordList)
 
+    // nuccコーパスのdata001.txt〜data129.txtに出現する名詞とそのDF値のマップ
+    val dfMap = cal.getDf()
     // nuccコーパスのdata001.txt〜data129.txtを解析
     for(i in 1 until 130) {
         println("data${String.format("%03d", i)}")
@@ -54,6 +59,8 @@ fun main(args: Array<String>) {
             //　返答メッセージの素性ベクトルを取得(TF値により算出)
             val reverseMessaseTfMap = Parser().calTf(reverseCommand, reverseMessageWordList)
             println(reverseMessaseTfMap)
+
+            val messaseTfIdfMap = messaseTfMap.clone() as LinkedHashMap<String, Double>
 
             // 入力メッセージと返答メッセージのコサイン類似度を計算
             val messageVector = messaseTfMap.values.toDoubleArray()
