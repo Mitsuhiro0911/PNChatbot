@@ -5,7 +5,6 @@ import kotlin.math.log10
 
 
 fun main(args: Array<String>) {
-    // TODO:素性ベクトルの計算処理にIDFの尺度を追加する
     // TODO:前処理でノイズ除去
     // TODO:Word2Vecで単語間の関係性把握
     // TODO:ポジティブ・ネガティブ判定

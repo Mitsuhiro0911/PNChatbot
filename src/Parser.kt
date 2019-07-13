@@ -51,6 +51,7 @@ class Parser {
      * 形態素解析し、出現した名詞のリストを返す。
      */
     fun parse(command: Array<String>, wordList: ArrayList<String>?): ArrayList<String>?{
+        val preProcessing = PreProcessing()
         // コマンド結果をProcessで受け取る
         val ps = Runtime.getRuntime().exec(command)
         // 標準出力
@@ -72,7 +73,10 @@ class Parser {
                     targetLine.split("[\t|,]".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
                 val word = targetLine.split("\t".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
                 if (targetType == "名詞") {
-                    wordList?.add(word)
+                    // 不用語ではないと判定された時のみリストに追加
+                    if(preProcessing.cleanNoise(word)) {
+                        wordList?.add(word)
+                    }
                 }
             }
         }
