@@ -23,13 +23,14 @@ class PreProcessing {
         var addFlag = true
         // 形態素解析した名詞が数字だけで構成される場合、不用語と判定する
         // 括弧で囲むことにより、groupメソッドの引数で部分を指定した抽出ができるようになる
-        val regex = "([0-9]+)"
+        val regex = "([0-9]+|[０-９]+)"
         val p = Pattern.compile(regex)
         val m = p.matcher(word)
-        if (m.find()) {
+        if (m.matches()) {
+            println(word)
             addFlag = false
         }
-
+        
         // 形態素解析した名詞が記号の場合、不用語と判定する
         if(word == "<" || word == ">") {
             addFlag = false
