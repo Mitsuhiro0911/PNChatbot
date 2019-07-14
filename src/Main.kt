@@ -9,16 +9,12 @@ fun main(args: Array<String>) {
     // TODO:Word2Vecで単語間の関係性把握
     // TODO:ポジティブ・ネガティブ判定
 
-    // チャットボットへの入力メッセージ
-//    val message = "この写真はインスタ映えしますね。"
-    val message = "おすすめのラーメンは。"
-//    val reverseMessage = "私の趣味は写真を取ることです。写真"
     val cal = Calculator()
 
-    // 入力メッセージを形態素解析し、出現する名詞をリストへ格納
+    // 入力メッセージ(message.txt)を形態素解析し、出現する名詞をリストへ格納
     val messageCommand = arrayOf(
         "sh", "-c",
-        "echo ${message} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
+        "mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd /Users/Nakamura/IdeaProjects/PNChatbot/data/input/message.txt"
     )
     val messageWordList = Parser().parseMessage(messageCommand)
     println(messageWordList)
