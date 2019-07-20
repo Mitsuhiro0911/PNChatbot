@@ -16,7 +16,9 @@ fun main(args: Array<String>) {
 
 class SkipGram {
     companion object {
+        // 入力メッセージと返答メッセージで出現しうる単語のリスト。この単語を起点としたSkipGramモデルベクトルを作成する。
         var targetWordList = ArrayList<String>()
+        // 起点のキワード、類似語、類似度のスコアを保持するリスト
         var skipGramMap = LinkedHashMap<String, LinkedHashMap<String, Double>>()
     }
 

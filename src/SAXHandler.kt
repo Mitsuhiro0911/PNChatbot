@@ -6,6 +6,7 @@ internal class SAXHandler : DefaultHandler() {
     var targetFlag = false
     // <synonyms>を読み込む時にtrueになるフラグ
     var synonymsFlag = false
+    // SkipGramモデルで類似語を探す元のキーワード
     var targetWord = ""
 
     /**
