@@ -41,6 +41,17 @@ internal class SAXHandler : DefaultHandler() {
         if (targetFlag && synonymsFlag) {
             println(String(ch, start, length))
             targetFlag = false
+            // synonymsタグの要素を整形し、単語とスコアに分割する
+            val synonymList = String(ch, start, length).replace("[", "").replace("]", "").split("), ")
+            for(synonym in synonymList) {
+                println(synonym)
+                val synonymWord = synonym.split(", ")[0]
+                val synonymScore = synonym.split(", ")[1]
+                println(synonymWord.substring(2, synonymWord.length - 1))
+                println(synonymScore.replace(")", ""))
+                println()
+                SkipGram.synonymMap.put(synonymWord.substring(2, synonymWord.length - 1), synonymScore.replace(")", "").toDouble())
+            }
         }
 
     }
