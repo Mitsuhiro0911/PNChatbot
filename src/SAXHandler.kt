@@ -6,6 +6,7 @@ internal class SAXHandler : DefaultHandler() {
     var targetFlag = false
     // <synonyms>を読み込む時にtrueになるフラグ
     var synonymsFlag = false
+    var targetWord = ""
 
     /**
      * 要素解析開始時に実行される。
@@ -30,8 +31,10 @@ internal class SAXHandler : DefaultHandler() {
      */
     override fun characters(ch: CharArray?, start: Int, length: Int) {
         // SkipGramベクトル取得対象の<word>を取得する
-        if (String(ch!!, start, length) == "尚絅学院中学校・高等学校") {
+//        if (String(ch!!, start, length) == "尚絅学院中学校・高等学校") {
+        if (SkipGram.targetWordList.contains(String(ch!!, start, length))) {
             println(String(ch, start, length))
+            targetWord = String(ch, start, length)
             targetFlag = true
             return
         }
@@ -43,6 +46,7 @@ internal class SAXHandler : DefaultHandler() {
             targetFlag = false
             // synonymsタグの要素を整形し、単語とスコアに分割する
             val synonymList = String(ch, start, length).replace("[", "").replace("]", "").split("), ")
+            val synonymMap = LinkedHashMap<String, Double>()
             for(synonym in synonymList) {
                 println(synonym)
                 val synonymWord = synonym.split(", ")[0]
@@ -50,7 +54,8 @@ internal class SAXHandler : DefaultHandler() {
                 println(synonymWord.substring(2, synonymWord.length - 1))
                 println(synonymScore.replace(")", ""))
                 println()
-                SkipGram.synonymMap.put(synonymWord.substring(2, synonymWord.length - 1), synonymScore.replace(")", "").toDouble())
+                synonymMap.put(synonymWord.substring(2, synonymWord.length - 1), synonymScore.replace(")", "").toDouble())
+                SkipGram.skipGramMap.put(targetWord, synonymMap)
             }
         }
 
