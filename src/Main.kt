@@ -72,6 +72,11 @@ fun main(args: Array<String>) {
             }
             println("入力メッセージTFIDF:${messaseTfIdfMap}\n返答メッセージTFIDF:${reverseMessaseTfIdfMap}")
 
+            // 入力メッセージ及び返答メッセージに出現する単語のSkipGramベクトルを取得用リストへ格納
+            for(word in messaseTfIdfMap.keys){
+                SkipGram.targetWordList.add(word)
+            }
+
             // 入力メッセージと返答メッセージのコサイン類似度を計算
             val messageVector = messaseTfIdfMap.values.toDoubleArray()
             val reverseMessageVector = reverseMessaseTfIdfMap.values.toDoubleArray()
@@ -84,6 +89,11 @@ fun main(args: Array<String>) {
             answer.put(reverseMessage.substring(5, reverseMessage.length), cosSimilarity)
         }
     }
+
+    // SkipGramベクトルを取得
+    println(SkipGram.targetWordList)
+    println(SkipGram().getSkipGramVectorSAX())
+
     // 返答メッセージ候補トップ１０を出力
     val sortedAnswer = answer.toList().sortedByDescending { it.second }.toMap()
     var i = 0
