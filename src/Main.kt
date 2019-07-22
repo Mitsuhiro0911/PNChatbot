@@ -10,6 +10,7 @@ fun main(args: Array<String>) {
     // TODO:ポジティブ・ネガティブ判定
 
     val cal = Calculator()
+    val messagesInfoList = arrayListOf<MessagesInfo>()
 
     // 入力メッセージ(message.txt)を形態素解析し、出現する名詞をリストへ格納
     val messageCommand = arrayOf(
@@ -31,6 +32,8 @@ fun main(args: Array<String>) {
         val br = BufferedReader(FileReader(File("./data/corpas/nucc_adjust/data${String.format("%03d", i)}.txt")))
         var reverseMessage = br.readLine()
         while (reverseMessage != null) {
+            val messagesInfo = MessagesInfo()
+
             // 文頭が「＠」で始まる文は解析対象ではないため、スキップする
             if(reverseMessage.get(0) == '＠'){
                 reverseMessage = br.readLine()
@@ -87,12 +90,33 @@ fun main(args: Array<String>) {
             println("返答：${reverseMessage.substring(5, reverseMessage.length)}")
             println()
             answer.put(reverseMessage.substring(5, reverseMessage.length), cosSimilarity)
+
+            messagesInfo.messaseTfIdfMap = messaseTfIdfMap
+            messagesInfo.similarMessaseTfIdfMap = reverseMessaseTfIdfMap
+            messagesInfo.reverseMessage = reverseMessage
+            messagesInfoList.add(messagesInfo)
+
         }
     }
 
     // SkipGramベクトルを取得
     println(SkipGram.targetWordList)
-    println(SkipGram().getSkipGramVectorSAX())
+    val skipGram = SkipGram().getSkipGramVectorSAX()
+    for(mi in messagesInfoList) {
+        println("入力メッセージのTF-IDF：${mi.messaseTfIdfMap}")
+        println("類似メッセージのTF-IDF：${mi.similarMessaseTfIdfMap}")
+        println("返答メッセージ候補：${mi.reverseMessage}")
+        // 入力メッセージと返答メッセージのコサイン類似度を計算
+        val messageVector = mi.messaseTfIdfMap.values.toDoubleArray()
+        val similarMessageVector = mi.similarMessaseTfIdfMap.values.toDoubleArray()
+        println("コサイン類似度：${cal.calCosSimilarity(messageVector, similarMessageVector)}")
+        // 使用するSkipGramベクトルを取得
+        for(word in mi.messaseTfIdfMap.keys) {
+            print("${word}：")
+            println(skipGram.get(word))
+        }
+        println()
+    }
 
     // 返答メッセージ候補トップ１０を出力
     val sortedAnswer = answer.toList().sortedByDescending { it.second }.toMap()
@@ -104,5 +128,12 @@ fun main(args: Array<String>) {
             break
         }
     }
+
+}
+
+class MessagesInfo {
+    var messaseTfIdfMap = LinkedHashMap<String, Double>()
+    var similarMessaseTfIdfMap = LinkedHashMap<String, Double>()
+    var reverseMessage = ""
 
 }
