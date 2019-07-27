@@ -6,7 +6,7 @@ import kotlin.math.log10
 
 fun main(args: Array<String>) {
     // TODO:前処理でノイズ除去
-    // TODO:Word2Vecで単語間の関係性把握
+    // TODO:SkipGramを多重で取得し、素性ベクトルを更に拡張
     // TODO:ポジティブ・ネガティブ判定
 
     val cal = Calculator()
@@ -109,22 +109,36 @@ fun main(args: Array<String>) {
                 for(vector in skipGram.get(word)!!){
                     // 入力メッセージ素性ベクトルを拡張。TF-IDF値が0.0以外の単語をSkip-Gramで拡張。
                     if(messaseTfIdfSkipGramMap.get(word) != 0.0) {
-                        // 既にSkipGramの素性ワードが存在する場合は処理をスキップし、TF-IDF値が上書きされるのを防止
-                        if(!messaseTfIdfSkipGramMap.keys.contains(vector.key)) {
+                        // 既にSkipGramの素性ワードが存在する場合はスコアを加算
+                        if(messaseTfIdfSkipGramMap.keys.contains(vector.key)) {
+                            messaseTfIdfSkipGramMap.put(vector.key, messaseTfIdfSkipGramMap.get(vector.key)!!.plus(vector.value))
+                        } else {
                             messaseTfIdfSkipGramMap.put(vector.key, vector.value)
                         }
                     } else {
-                        messaseTfIdfSkipGramMap.put(vector.key, 0.0)
+                        // 既にSkipGramの素性ワードが存在する場合はスコアを加算
+                        if(messaseTfIdfSkipGramMap.keys.contains(vector.key)) {
+                            messaseTfIdfSkipGramMap.put(vector.key, messaseTfIdfSkipGramMap.get(vector.key)!!.plus(0.0))
+                        } else {
+                            messaseTfIdfSkipGramMap.put(vector.key, 0.0)
+                        }
                     }
 
                     // 類似メッセージ素性ベクトルを拡張。TF-IDF値が0.0以外の単語をSkip-Gramで拡張。
                     if(similarMessaseTfIdfSkipGramMap.get(word) != 0.0) {
-                        if(similarMessaseTfIdfSkipGramMap.get(word) != 0.0) {
-                            // 既にSkipGramの素性ワードが存在する場合は処理をスキップし、TF-IDF値が上書きされるのを防止
+                        // 既にSkipGramの素性ワードが存在する場合はスコアを加算
+                        if(similarMessaseTfIdfSkipGramMap.keys.contains(vector.key)) {
+                            similarMessaseTfIdfSkipGramMap.put(vector.key, similarMessaseTfIdfSkipGramMap.get(vector.key)!!.plus(vector.value))
+                        } else {
                             similarMessaseTfIdfSkipGramMap.put(vector.key, vector.value)
                         }
                     } else {
-                        similarMessaseTfIdfSkipGramMap.put(vector.key, 0.0)
+                        // 既にSkipGramの素性ワードが存在する場合はスコアを加算
+                        if(similarMessaseTfIdfSkipGramMap.keys.contains(vector.key)) {
+                            similarMessaseTfIdfSkipGramMap.put(vector.key, similarMessaseTfIdfSkipGramMap.get(vector.key)!!.plus(0.0))
+                        } else {
+                            similarMessaseTfIdfSkipGramMap.put(vector.key, 0.0)
+                        }
                     }
                 }
             }
