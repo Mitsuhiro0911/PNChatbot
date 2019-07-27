@@ -96,15 +96,49 @@ fun main(args: Array<String>) {
         val messageVector = mi.messaseTfIdfMap.values.toDoubleArray()
         val similarMessageVector = mi.similarMessaseTfIdfMap.values.toDoubleArray()
         val cosSimilarity = cal.calCosSimilarity(messageVector, similarMessageVector)
-        println("コサイン類似度：${cosSimilarity}")
+        println("コサイン類似度(TF-IDF)：${cosSimilarity}\n")
 
         // 使用するSkipGramベクトルを取得
+        val messaseTfIdfSkipGramMap = mi.messaseTfIdfMap.clone() as LinkedHashMap<String, Double>
+        val similarMessaseTfIdfSkipGramMap = mi.similarMessaseTfIdfMap.clone() as LinkedHashMap<String, Double>
         for(word in mi.messaseTfIdfMap.keys) {
-            print("${word}：")
-            println(skipGram.get(word))
+//            print("${word}：")
+//            println(skipGram.get(word))
+            // TF-IDF素性ベクトルをSkipGram素性ベクトルで拡張
+            if(skipGram.get(word) != null) {
+                for(vector in skipGram.get(word)!!){
+                    // 入力メッセージ素性ベクトルを拡張。TF-IDF値が0.0以外の単語をSkip-Gramで拡張。
+                    if(messaseTfIdfSkipGramMap.get(word) != 0.0) {
+                        // 既にSkipGramの素性ワードが存在する場合は処理をスキップし、TF-IDF値が上書きされるのを防止
+                        if(!messaseTfIdfSkipGramMap.keys.contains(vector.key)) {
+                            messaseTfIdfSkipGramMap.put(vector.key, vector.value)
+                        }
+                    } else {
+                        messaseTfIdfSkipGramMap.put(vector.key, 0.0)
+                    }
+
+                    // 類似メッセージ素性ベクトルを拡張。TF-IDF値が0.0以外の単語をSkip-Gramで拡張。
+                    if(similarMessaseTfIdfSkipGramMap.get(word) != 0.0) {
+                        if(similarMessaseTfIdfSkipGramMap.get(word) != 0.0) {
+                            // 既にSkipGramの素性ワードが存在する場合は処理をスキップし、TF-IDF値が上書きされるのを防止
+                            similarMessaseTfIdfSkipGramMap.put(vector.key, vector.value)
+                        }
+                    } else {
+                        similarMessaseTfIdfSkipGramMap.put(vector.key, 0.0)
+                    }
+                }
+            }
+
         }
+        println("入力メッセージのTF-IDF&SkipGram：${messaseTfIdfSkipGramMap}")
+        println("類似メッセージのTF-IDF&SkipGram：${similarMessaseTfIdfSkipGramMap}")
+        // 入力メッセージと返答メッセージのコサイン類似度を計算
+        val messageTfIdfSkipVector = messaseTfIdfSkipGramMap.values.toDoubleArray()
+        val similarMessageTfIdfSkipVector = similarMessaseTfIdfSkipGramMap.values.toDoubleArray()
+        val TfIdfSkipcosSimilarity = cal.calCosSimilarity(messageTfIdfSkipVector, similarMessageTfIdfSkipVector)
+        println("コサイン類似度(TF-IDF&SkipGram)：${TfIdfSkipcosSimilarity}\n")
         println("\n-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n")
-        answer.put(mi.reverseMessage, cosSimilarity)
+        answer.put(mi.reverseMessage, TfIdfSkipcosSimilarity)
     }
 
     // 返答メッセージ候補トップ１０を出力
