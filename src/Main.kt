@@ -20,8 +20,6 @@ fun main(args: Array<String>) {
     val messageWordList = Parser().parseMessage(messageCommand)
     println(messageWordList)
 
-    // 返答メッセージと類似度のマップ
-    var answer = LinkedHashMap<String, Double>()
     // nuccコーパスのdata001.txt〜data129.txtに出現する名詞とそのDF値のマップ
     val dfMap = cal.getDf(messageWordList)
     // nuccコーパスのdata001.txt〜data129.txtの全会話数
@@ -30,38 +28,34 @@ fun main(args: Array<String>) {
     for(i in 1 until 130) {
         println("data${String.format("%03d", i)}")
         val br = BufferedReader(FileReader(File("./data/corpas/nucc_adjust/data${String.format("%03d", i)}.txt")))
-        var reverseMessage = br.readLine()
-        while (reverseMessage != null) {
+        var corpasMessage = br.readLine()
+        while (corpasMessage != null) {
             val messagesInfo = MessagesInfo()
-
             // 文頭が「＠」で始まる文は解析対象ではないため、スキップする
-            if(reverseMessage.get(0) == '＠'){
-                reverseMessage = br.readLine()
+            if(corpasMessage.get(0) == '＠'){
+                corpasMessage = br.readLine()
                 continue
             }
-//        println(reverseMessage)
+
             // substringによって、文頭の人物コードをカット
             val reverseCommand = arrayOf(
                 "sh", "-c",
-                "echo ${reverseMessage.substring(5, reverseMessage.length)} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
+                "echo ${corpasMessage.substring(5, corpasMessage.length)} | mecab -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd"
             )
 
             // 返答メッセージを形態素解析し、出現する名詞をリストへ格納。入力メッセージと名詞が１つも被らない場合はnullとなる
-            val reverseMessageWordList = Parser().parseReverseMessage(reverseCommand, messageWordList, reverseMessage)
+            val reverseMessageWordList = Parser().parseReverseMessage(reverseCommand, messageWordList, corpasMessage)
             // 入力メッセージと返答メッセージの名詞が全く重複しない場合、その後の処理は冗長なのでスキップする(処理速度向上目的)
             if (reverseMessageWordList === null) {
-                reverseMessage = br.readLine()
+                corpasMessage = br.readLine()
                 continue
             }
-            println()
-            println("類似した発話：${reverseMessage.substring(5, reverseMessage.length)}")
+            messagesInfo.similarMessase = corpasMessage.substring(5, corpasMessage.length)
             //　入力メッセージの素性ベクトルを取得(TF値により算出)
             val messaseTfMap = Parser().calTf(messageCommand, reverseMessageWordList)
-            println(messaseTfMap)
 
             //　返答メッセージの素性ベクトルを取得(TF値により算出)
             val reverseMessaseTfMap = Parser().calTf(reverseCommand, reverseMessageWordList)
-            println(reverseMessaseTfMap)
 
             // 入力メッセージと返答メッセージのTF-IDF値を計算
             var messaseTfIdfMap = messaseTfMap.clone() as LinkedHashMap<String, Double>
@@ -73,49 +67,44 @@ fun main(args: Array<String>) {
                 val reverseMessaseTfIdf = reverseMessaseTfMap.get(word)!! * idf
                 reverseMessaseTfIdfMap.put(word, reverseMessaseTfIdf)
             }
-            println("入力メッセージTFIDF:${messaseTfIdfMap}\n返答メッセージTFIDF:${reverseMessaseTfIdfMap}")
 
             // 入力メッセージ及び返答メッセージに出現する単語のSkipGramベクトルを取得用リストへ格納
             for(word in messaseTfIdfMap.keys){
                 SkipGram.targetWordList.add(word)
             }
 
-            // 入力メッセージと返答メッセージのコサイン類似度を計算
-            val messageVector = messaseTfIdfMap.values.toDoubleArray()
-            val reverseMessageVector = reverseMessaseTfIdfMap.values.toDoubleArray()
-            val cosSimilarity = cal.calCosSimilarity(messageVector, reverseMessageVector)
-            println("コサイン類似度：${cosSimilarity}")
-
-            reverseMessage = br.readLine()
-            println("返答：${reverseMessage.substring(5, reverseMessage.length)}")
-            println()
-            answer.put(reverseMessage.substring(5, reverseMessage.length), cosSimilarity)
+            corpasMessage = br.readLine()
 
             messagesInfo.messaseTfIdfMap = messaseTfIdfMap
             messagesInfo.similarMessaseTfIdfMap = reverseMessaseTfIdfMap
-            messagesInfo.reverseMessage = reverseMessage
+            messagesInfo.reverseMessage = corpasMessage.substring(5, corpasMessage.length)
             messagesInfoList.add(messagesInfo)
-
         }
     }
 
     // SkipGramベクトルを取得
     println(SkipGram.targetWordList)
     val skipGram = SkipGram().getSkipGramVectorSAX()
+    // 返答メッセージと類似度のマップ
+    var answer = LinkedHashMap<String, Double>()
     for(mi in messagesInfoList) {
-        println("入力メッセージのTF-IDF：${mi.messaseTfIdfMap}")
-        println("類似メッセージのTF-IDF：${mi.similarMessaseTfIdfMap}")
-        println("返答メッセージ候補：${mi.reverseMessage}")
+        println("入力メッセージのTF-IDF：${mi.messaseTfIdfMap}\n")
+        println("類似メッセージ：${mi.similarMessase}")
+        println("類似メッセージのTF-IDF：${mi.similarMessaseTfIdfMap}\n")
+        println("返答メッセージ候補：${mi.reverseMessage}\n")
         // 入力メッセージと返答メッセージのコサイン類似度を計算
         val messageVector = mi.messaseTfIdfMap.values.toDoubleArray()
         val similarMessageVector = mi.similarMessaseTfIdfMap.values.toDoubleArray()
-        println("コサイン類似度：${cal.calCosSimilarity(messageVector, similarMessageVector)}")
+        val cosSimilarity = cal.calCosSimilarity(messageVector, similarMessageVector)
+        println("コサイン類似度：${cosSimilarity}")
+
         // 使用するSkipGramベクトルを取得
         for(word in mi.messaseTfIdfMap.keys) {
             print("${word}：")
             println(skipGram.get(word))
         }
-        println()
+        println("\n-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+\n")
+        answer.put(mi.reverseMessage, cosSimilarity)
     }
 
     // 返答メッセージ候補トップ１０を出力
@@ -132,7 +121,11 @@ fun main(args: Array<String>) {
 }
 
 class MessagesInfo {
+    companion object {
+        var message = ""
+    }
     var messaseTfIdfMap = LinkedHashMap<String, Double>()
+    var similarMessase = ""
     var similarMessaseTfIdfMap = LinkedHashMap<String, Double>()
     var reverseMessage = ""
 

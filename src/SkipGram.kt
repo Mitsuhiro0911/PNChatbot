@@ -8,10 +8,10 @@ import javax.xml.parsers.SAXParserFactory
 
 fun main(args: Array<String>) {
     // DOMによるSkipGramベクトルの取得
-    SkipGram.targetWordList.add("片")
-    SkipGram.targetWordList.add("<")
-    SkipGram.targetWordList.add("する")
-    println(SkipGram().getSkipGramVectorDOM())
+//    SkipGram.targetWordList.add("片")
+//    SkipGram.targetWordList.add("<")
+//    SkipGram.targetWordList.add("する")
+//    println(SkipGram().getSkipGramVectorDOM())
 
     // SAXによるSkipGramベクトルの取得
 //    SkipGram.targetWordList.add("ゲーム")
